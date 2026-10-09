@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For You</title>
+
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  color: #695362;
+  background: #fff9ed linear-gradient(145deg, #fff0f4, #fff9ed, #f0eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 14px;
+  overflow-x: hidden;
+}
+
+main {
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+}
+
+.tag {
+  display: inline-block;
+  padding: 9px 16px;
+  border-radius: 30px;
+  background: #fff;
+  color: #cb819e;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+h1 {
+  font-size: clamp(32px, 9vw, 43px);
+  margin: 22px 0 10px;
+}
+
+h1 span { color: #d981a2; }
+
+.subtitle {
+  color: #978493;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.mascots {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 12px;
+  margin: 22px auto;
+}
+
+.animal {
+  font-size: 76px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.animal:nth-child(2) {
+  animation-delay: -1.5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-9px) rotate(4deg); }
+}
+
+.card {
+  background: rgba(255,255,255,.85);
+  border: 2px solid white;
+  border-radius: 27px;
+  padding: 26px 21px;
+  box-shadow: 0 15px 45px #d7b5ca45;
+}
+
+.label {
+  color: #cb819e;
+  background: #fff0f5;
+  display: inline-block;
+  padding: 8px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+#message {
+  font-size: 20px;
+  line-height: 1.55;
+  margin: 20px 0 12px;
+  transition: opacity .18s;
+}
+
+#detail {
+  color: #978493;
+  font-size: 14px;
+  line-height: 1.8;
+  transition: opacity .18s;
+}
+
+button {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 25px;
+  padding: 14px 12px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+button:active { transform: scale(.97); }
+
+.primary {
+  background: #dc8da9;
+  color: white;
+  box-shadow: 0 6px 15px #dc8da944;
+}
+
+.secondary {
+  background: #f0e8ff;
+  color: #8975a5;
+}
+
+footer {
+  color: #a391a0;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 22px;
+}
+
+#toast {
+  position: fixed;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  background: #695362;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 25px;
+  font-size: 13px;
+  transition: .3s;
+  width: max-content;
+  max-width: 90%;
+  pointer-events: none;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<main>
+  <div class="tag">a tiny reminder for you ✿</div>
+
+  <h1>hai, <span>kamu!</span> 🌷</h1>
+
+  <p class="subtitle">
+    Ada sedikit pesan kecil buat menemani<br>
+    hari kamu hari ini.
+  </p>
+
+  <div class="mascots" aria-label="Beruang dan kucing lucu">
+    <div class="animal" role="img" aria-label="Beruang">🧸</div>
+    <div class="animal" role="img" aria-label="Kucing">🐱</div>
+  </div>
+
+  <section class="card">
+    <div class="label">💌 pesan kecil buat kamu</div>
+
+    <div id="message">
+      Kamu nggak harus sempurna hari ini.
+      Cukup lakukan yang kamu bisa, satu per satu. 🌷
+    </div>
+
+    <div id="detail">
+      Jangan lupa makan, minum, dan istirahat yaa.
+      Kamu juga perlu menjaga dirimu sendiri. 🤍
+    </div>
+
+    <button class="primary" onclick="newMessage()">
+      butuh semangat lagi? ✨
+    </button>
+
+    <button class="secondary" onclick="hug()">
+      pencet kalau butuh peluk 🧸
+    </button>
+  </section>
+
+  <footer>
+    semoga hari kamu dipenuhi hal-hal baik ♡<br>
+    <span>take it slowly, you're doing okay ☁️</span>
+  </footer>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const messages = [
+  {
+    main: "Kalau hari ini terasa berat, istirahat sebentar juga nggak apa-apa. 🌷",
+    detail: "Kamu nggak harus menyelesaikan semuanya sekaligus. Pelan-pelan, ya."
+  },
+  {
+    main: "Semoga hari ini ada hal kecil yang bikin kamu senyum. ☁️",
+    detail: "Kalau belum ada, semoga pesan kecil ini jadi salah satunya."
+  },
+  {
+    main: "Semangat yaa, orang hebat! 🍀",
+    detail: "Semoga urusanmu dimudahkan satu per satu dan kamu ketemu banyak hal baik."
+  },
+  {
+    main: "Kamu boleh capek, kamu boleh istirahat. 🤍",
+    detail: "Jangan terlalu keras sama diri sendiri. Kamu juga pantas mendapat perhatian."
+  },
+  {
+    main: "Satu langkah kecil tetaplah sebuah kemajuan. 🌱",
+    detail: "Nggak perlu membandingkan perjalananmu dengan siapa pun. Terus tumbuh dengan caramu."
+  },
+  {
+    main: "Hei, jangan lupa makan hari ini yaa! 🐻",
+    detail: "Sesibuk apa pun harimu, semoga kamu tetap punya waktu buat merawat diri."
+  },
+  {
+    main: "Semoga hal yang kamu khawatirkan ternyata nggak seburuk bayanganmu. 🌤️",
+    detail: "Tarik napas pelan-pelan. Hadapi satu hal dalam satu waktu."
+  },
+  {
+    main: "Kamu sudah berusaha sejauh ini. Itu juga layak diapresiasi. 💗",
+    detail: "Nggak semua kemajuan langsung terlihat. Beberapa hal baik tumbuh diam-diam."
+  },
+  {
+    main: "Kalau hari ini nggak berjalan sesuai rencana, besok masih ada kesempatan. 🌼",
+    detail: "Kamu nggak harus selalu kuat. Beri dirimu waktu untuk memulai lagi."
+  },
+  {
+    main: "Semoga kamu dikelilingi orang baik dan kabar baik hari ini. ✨",
+    detail: "Dan semoga ada banyak alasan kecil yang bikin kamu tersenyum."
+  },
+  {
+    main: "Satu tugas dulu, satu langkah dulu. Kamu bisa mencoba pelan-pelan. 📚",
+    detail: "Jangan biarkan semua hal yang belum selesai membuatmu lupa pada apa yang sudah kamu lakukan."
+  },
+  {
+    main: "Ada hari untuk berlari, ada hari untuk berjalan pelan. Keduanya tetap berarti. 🐱",
+    detail: "Hari ini, jalani dengan ritme yang bisa kamu usahakan."
+  }
+];
+
+let previous = 0;
+let toastTimer;
+
+function newMessage() {
+  let index;
+
+  do {
+    index = Math.floor(Math.random() * messages.length);
+  } while (index === previous && messages.length > 1);
+
+  previous = index;
+
+  const message = document.getElementById("message");
+  const detail = document.getElementById("detail");
+
+  message.style.opacity = "0";
+  detail.style.opacity = "0";
+
+  setTimeout(() => {
+    message.textContent = messages[index].main;
+    detail.textContent = messages[index].detail;
+    message.style.opacity = "1";
+    detail.style.opacity = "1";
+  }, 180);
+}
+
+function hug() {
+  showToast("peluk virtual buat kamu! 🧸💗");
+}
+
+function showToast(text) {
+  const toast = document.getElementById("toast");
+  toast.textContent = text;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2400);
+}
+</script>
+</body>
+</html>
